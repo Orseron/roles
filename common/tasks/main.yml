@@ -2,9 +2,9 @@
 ---
 # tasks file for common
 
-- name: set timezone to Europe/Moscow
+- name: set timezone to "{{region}}/{{city}}"
   timezone:
-    name: Europe/Moscow
+    name: "{{region}}/{{city}}"
 
 - name: set new hostname
   ansible.builtin.hostname:
@@ -13,29 +13,29 @@
 
 - block:
     - name: создать файл под будущий swap 
-      shell: fallocate -l {{swap_size}} /swapfile
+      shell: fallocate -l {{swap_size}} {{swapfile}}
       args:
-        creates: /swapfile
+        creates: {{swapfile}}
     
     - name: установить корректные права
       file:
-        path: /swapfile
+        path: {{swapfile}}
         owner: root
         group: root
         mode: '0600'
 
     - name: сделать из файла swap-файл
-      shell: mkswap /swapfile
+      shell: mkswap {{swapfile}}
       when: ansible_facts.swapfree_mb == 0
 
     - name: применить swap-файл
-      shell: swapon /swapfile
+      shell: swapon {{swapfile}}
       when: ansible_facts.swapfree_mb == 0
 
     - name: добавить swap-файл в fstab
       mount:
         name: none
-        src: /swapfile
+        src: {{swapfile}}
         fstype: swap
         opts: sw
         passno: 0
