@@ -6,6 +6,11 @@
   timezone:
     name: Europe/Moscow
 
+- name: set new hostname
+  ansible.builtin.hostname:
+    name: "{{hostname}}"
+  become: true
+
 - block:
     - name: создать файл под будущий swap 
       shell: fallocate -l {{swap_size}} /swapfile
