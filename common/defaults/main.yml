@@ -4,4 +4,9 @@
 swap_size: 1G
 region: Europe
 city: Moscow
-swapfile: swapfile
+swapfile: /swapfile
+packages:
+    - git
+    - htop
+    - net-tools
+    - wget

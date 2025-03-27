@@ -16,15 +16,17 @@
     name: "{{ hostname }}"
   become: true
 
-- block:
+- name: Добавить swap-файл 
+  become: true
+  block:
     - name: создать файл под будущий swap 
       shell: fallocate -l {{ swap_size }} {{ swapfile }}
       args:
-        creates: /{{ swapfile }}
+        creates: /swapfile
     
     - name: установить корректные права
       file:
-        path: /{{ swapfile }}
+        path: /swapfile
         owner: root
         group: root
         mode: '0600'
@@ -40,9 +42,19 @@
     - name: добавить swap-файл в fstab
       mount:
         name: none
-        src: /{{ swapfile }}
+        src: /swapfile
         fstype: swap
         opts: sw
         passno: 0
         dump: 0
         state: present
+
+- block: 
+    - name: Установка софта
+      become: true
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - "{{ packages }}"
