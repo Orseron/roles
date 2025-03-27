@@ -1,0 +1,4 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for docker
+ansible_distribution_release: $(lsb_release -cs)
