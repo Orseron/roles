@@ -9,7 +9,7 @@
 
     - name: добавить репозиторий для докера
       apt_repository:
-        repo: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable'
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
         state: present
 
     - name: апгрейд кеша
@@ -18,12 +18,28 @@
 
     - name: установка докера
       apt:
-        name: docker-ce
-        state: present
+        name: "{{item}}"
+        state: latest
+        update_cache: yes
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
 
     - name: проверить докер-сервис
       service:
         name: docker
-        state: present
+        state: started
         enabled: yes
+
+    - name: проверка существования группы "docker"
+      ansible.builtin.group:
+          name: docker
+          state: present
+
+    - name: добавить пользователя в группу
+      user:
+          name: main_user
+          groups: docker
+          append: yes
   become: yes
