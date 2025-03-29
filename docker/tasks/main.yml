@@ -13,20 +13,24 @@
         - curl
         - gnupg-agent
         - software-properties-common
+      become: true
 
     - name: добавить GPG-ключ для докера
       apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
+      become: true
 
     - name: добавить репозиторий для докера
       apt_repository:
         repo: deb https://download.docker.com/linux/ubuntu bionic stable
         state: present
+      become: true
 
     - name: апгрейд кеша
       apt:
         update_cache: yes
+      become: true
 
     - name: установка докера
       apt:
@@ -37,33 +41,38 @@
         - docker-ce
         - docker-ce-cli
         - containerd.io
+      become: true
 
     - name: проверить докер-сервис
       service:
         name: docker
         state: started
         enabled: yes
+      become: true
 
     - name: проверка существования группы "docker"
       ansible.builtin.group:
         name: docker
         state: present
+      become: true
 
     - name: добавить пользователя в группу
       user:
         name: main_user
         groups: docker
         append: yes
+      become: true
 
     - name: установка docker-compose
       get_url:
         url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
         dest: /usr/local/bin/docker-compose
         mode: 'u+x,g+x'
+      become: true
 
     - name: сменить владельца файла, группу и разрешение
       ansible.builtin.file:
         path: /usr/local/bin/docker-compose
         owner: main_user
         group: user
-  become: true
+      become: true
